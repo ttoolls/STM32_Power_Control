@@ -47,7 +47,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-		
+	volatile uint16_t ADC_Data[3];
+	uint8_t Alarm = 0;	//< This variable indicates if alarm situation is detected	
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -95,7 +96,7 @@ int main(void)
   MX_ADC1_Init();
   MX_CAN1_Init();
   /* USER CODE BEGIN 2 */
-		
+	HAL_ADC_Start_DMA(&hadc1, (uint32_t*) ADC_Data, 3);
   /* USER CODE END 2 */
  
  
@@ -105,6 +106,11 @@ int main(void)
   while (1)
   {
 		Current_Max_Read();
+		if (Check_Parameters(ADC_Data[0], ADC_Data[1], ADC_Data[2]) == 0)
+	{
+		HAL_GPIO_WritePin(SUPPL_ON_OFF_GPIO_Port, SUPPL_ON_OFF_Pin, GPIO_PIN_RESET);
+		Alarm = 1;
+	}
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
